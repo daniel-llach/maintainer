@@ -18,6 +18,7 @@ var MaintainerModel = Backbone.Model.extend({
 
 > title: 
   The title of the maintainer.
+  
 > layout:
   The composite regions view.
   Nomenclature is a description to the top/left screen to the bottom/right
