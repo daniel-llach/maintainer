@@ -1,0 +1,140 @@
+//// setting custom class ////
+@font-face{font-family:'Open Sans';font-style:normal;font-weight:normal;src:local('Open Sans'),local('OpenSans'),url('fonts/OpenSans-Regular.ttf') format('truetype')}@font-face{font-family:'Open Sans';font-weight:300;src:local('Open Sans'),local('OpenSans'),url('fonts/OpenSans-Light.ttf') format('truetype')}@font-face{font-family:'Open Sans';font-weight:700;src:local('Open Sans'),local('OpenSans'),url('fonts/OpenSans-Bold.ttf') format('truetype')}
+
+.translate (@x: -50%, @y: -50%)
+{
+    -webkit-transform: translate( @x, @y );
+    -moz-transform: translate( @x, @y );
+    -o-transform: translate( @x, @y );
+    transform: translate( @x, @y );
+}
+
+.center
+{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  .translate(-50%, -50%);
+
+}
+
+.border-radius(@radius: 10px)
+{
+  -webkit-border-radius: @radius;
+     -moz-border-radius: @radius;
+      -ms-border-radius: @radius;
+       -o-border-radius: @radius;
+          border-radius: @radius;
+}
+
+.box-sizing(@box: border-box)
+{
+    -webkit-box-sizing: @box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: @box;    /* Firefox, other Gecko */
+    box-sizing: @box;         /* Opera/IE 8+ */
+}
+
+
+//////// STYLE ///////
+
+// width region
+
+.hOne.region
+{
+    width: 100%;
+}
+
+.hHalf.region
+{
+    width: 50%;
+}
+// third
+.hThird.region
+{
+    width: 30%;
+}
+
+.hTwo-third.region
+{
+    width: 70%;
+}
+
+// fourth
+
+.hFourth.region
+{
+    width: 25%;
+}
+
+.hThird-fourth.region
+{
+    width: 75%;
+}
+
+// height region
+.vOne.region
+{
+  height: 790px;
+}
+
+.vFourth
+{
+  height: 198px;
+}
+
+.vThird-fourth
+{
+  height: 592px;
+}
+
+
+
+.region
+{
+  min-height: 100px;
+  float: left;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid rgba(241, 248, 250, 0.52);
+
+  .box-sizing;
+  // -webkit-transition: all 1s ease-in-out;
+  // -moz-transition: all 1s ease-in-out;
+  // -o-transition: all 1s ease-in-out;
+  // transition: all 1s ease-in-out;
+
+
+    .noDeploy
+    {
+      font-size: 12px;
+      color: #666;
+      .center;
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
