@@ -13,7 +13,8 @@ define([
         defaults: {
             title: "MANTENEDOR DE FRANJAS",
             layout: "columnHeaderMainflip", // fullpage, columnHeaderMainflip
-            behaviour: []
+            behaviour: [],
+            states: ["edit","import","export","graphics"}]
         }
     });
 
@@ -82,13 +83,5 @@ define([
         console.log("Regions start");
     });
 
-
-	// var channel = Radio.channel('global');
-    // console.log(channel);
-
-    // App = new Marionette.Application();
-    // App.listenTo(App, "start", function(){
-    //     alert("Hello World!");
-    // });
     return Maintainer;
 });
