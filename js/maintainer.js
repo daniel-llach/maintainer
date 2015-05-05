@@ -14,7 +14,7 @@ define([
             title: "MANTENEDOR DE FRANJAS",
             layout: "columnHeaderMainflip", // fullpage, columnHeaderMainflip
             behaviour: [],
-            states: ["edit","import","export","graphics"}]
+            states: ["edit","import","export","graphics"]
         }
     });
 
