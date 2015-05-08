@@ -31,7 +31,7 @@ define([
                     name:"edit1",
                     layout: "columnHeaderMainflip",
                     state: "edit",
-                    active: false
+                    active: true
                 },
                 {
                     name: "exportar1",
@@ -43,7 +43,7 @@ define([
                     name: "import1",
                     layout: "fullpage",
                     state: "import",
-                    active: true
+                    active: false
                 }
             ]
         }

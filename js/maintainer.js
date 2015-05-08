@@ -25,10 +25,7 @@ define([
     App.module("Maintainer", function(Maintainer, App){
         this.startWithParent = false;
 
-        var MaintainerModel = Backbone.Model.extend();
-        var MaintainerModes = Backbone.Collection.extend();
-
-        // Modes
+        // Modes stuff
         var ModeView = Marionette.ItemView.extend({
             tagName: "li",
             template: _.template("<span></span>"),
@@ -45,9 +42,11 @@ define([
                 }
             }
         });
+
         var ModesView = Marionette.CompositeView.extend({
             childView: ModeView,
             template: _.template(TemplateModes),
+            childViewContainer: ".options",
             templateHelpers: function(){
                 var modeActive = this.collection.findWhere({
                                     "active": true
@@ -56,10 +55,12 @@ define([
                     modeActiveName: modeActive.name,
                     modeActiveState: modeActive.state,
                 };
-            },
-            childViewContainer: ".options"
+            }
         });
 
+        // Maintainer stuff
+        var MaintainerModel = Backbone.Model.extend();
+        var MaintainerModes = Backbone.Collection.extend();
         var MaintainerLayout = Marionette.LayoutView.extend({
             tagName: "div",
             className: "maintainer",
@@ -73,7 +74,8 @@ define([
             events: {
                 "mouseenter .modes" : "modeButton",
                 "mouseleave .modes" : "hideOptions",
-                "click .modes .options li span": "changeMode"
+                "click .modes .options li span": "changeMode",
+                "click .actionButton": "action"
             },
 
             modeButton: function(event){
@@ -93,6 +95,22 @@ define([
                     modeName: ModeName
                 });
 
+                // actionButton
+                var activeMode = Maintainer.modes.findWhere({"active": true});
+                var activeState = activeMode.get("state");
+                this.$el.find(".actionButton li").removeClass();
+                this.$el.find(".actionButton li").addClass(activeState);
+
+            },
+
+            action: function(event){
+                var eventName = "action:button:" + event.type;
+                Maintainer.Channel.trigger(eventName, {eventName: eventName});
+            },
+
+
+            broadcastEvent: function(event){
+
             },
 
             onShow: function()
@@ -100,7 +118,6 @@ define([
                 // set Modes
                 Maintainer.ModeButtons = new ModesView({collection: Maintainer.modes});
                 Maintainer.Layout.getRegion("modes").show(Maintainer.ModeButtons);
-
 
                 // start regions
                 var Regions = App.module("Maintainer.Regions");
@@ -110,15 +127,21 @@ define([
                     modes: Maintainer.modes
                 });
 
+                // actionButton
+                var activeMode = Maintainer.modes.findWhere({"active": true});
+                var activeState = activeMode.get("state");
+                this.$el.find(".actionButton li").addClass(activeState);
+
+                // tunes region channel
                 var regionsChannel = Radio.channel(regionsChannelName);
                 var regionsView = regionsChannel.request("get:regions:root");
 
+                // show regions
                 Maintainer.Layout.getRegion("container").show(regionsView);
 
-                //
+                // re-renderizar modes
                 Maintainer.Channel.listenTo(regionsChannel, "change:mode", function(args){
                     Maintainer.ModeButtons.render();
-
                 });
             }
 
@@ -126,12 +149,14 @@ define([
         });
 
         this.on("start", function(options){
+
             var dataMaintainer = options.dataMaintainer;
             this.Channel = Radio.channel(options.channelName);
 
             this.model = new MaintainerModel(dataMaintainer);
             this.Layout = new MaintainerLayout({model: this.model});
 
+            // add region and create Modes instances
             var modesRegion = Marionette.Region.extend();
             var modeSelector = this.Layout.$el.find(".modes");
             this.Layout.addRegion("modes", modeSelector);
@@ -234,6 +259,10 @@ define([
 
         App.Channel.on("change:layout", function(args){
             maintainerChannel.command("set:layout", args);
+        });
+
+        App.Channel.listenTo(maintainerChannel, "action:button:click", function(){
+            alert("click action desactivado (no modify)");
         });
     });
 
