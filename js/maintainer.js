@@ -3,85 +3,239 @@ define([
 	"backbone.radio",
 	"radio.shim",
     "text!templates/maintainer.html",
+    "text!templates/modes.html",
     "text!regions/templates/fullpage.html",
     "text!regions/templates/columnHeaderMainflip.html"
-], function (Marionette, Radio, Shim, TemplateMaintainer, FullPageTemplate, ColumnHeaderMainflip) {
+], function (Marionette, Radio, Shim, TemplateMaintainer, TemplateModes, FullPageTemplate, ColumnHeaderMainflip) {
+    // Enviroment
+    var App = new Marionette.Application();
 
-	var Maintainer = new Marionette.Application();
-
-    var MaintainerModel = Backbone.Model.extend({
-        defaults: {
-            title: "MANTENEDOR DE FRANJAS",
-            layout: "columnHeaderMainflip", // fullpage, columnHeaderMainflip
-            behaviour: [],
-            states: ["edit","import","export","graphics"]
-        }
+    // Example div target
+    var ExampleLayout = Marionette.LayoutView.extend({
+        el: "body",
+        template: _.template("<div id=\"somediv\" style=\"width:100%;\"></div>"),
+        className: "component"
     });
 
-    var MaintainerLayout = Marionette.LayoutView.extend({
-        el: "#mainRegion",
-        tagName: "div",
-        className: "maintainer",
-        template: _.template(TemplateMaintainer),
-        regions: {
-            headerLeft: ".header .left",
-            headerRight: ".header .right",
-            container: ".container"
-        }
+    var Target = new ExampleLayout();
+    Target.addRegion("main", "#somediv");
+    Target.render();
+
+    // Maintainer Module!
+    App.module("Maintainer", function(Maintainer, App){
+        this.startWithParent = false;
+
+        var MaintainerModel = Backbone.Model.extend();
+        var MaintainerModes = Backbone.Collection.extend();
+
+        // Modes
+        var ModeView = Marionette.ItemView.extend({
+            tagName: "li",
+            template: _.template("<span></span>"),
+            onRender: function(){
+                this.$el.attr( "id" , this.model.get("name") );
+                this.$el.addClass( this.model.get("state") );
+                switch( this.model.get("active") ){
+                    case true:
+                        this.$el.addClass("hide");
+                        break;
+                    case false:
+                        this.$el.removeClass("hide");
+                        break;
+                }
+            }
+        });
+        var ModesView = Marionette.CompositeView.extend({
+            childView: ModeView,
+            template: _.template(TemplateModes),
+            templateHelpers: function(){
+                var modeActive = this.collection.findWhere({
+                                    "active": true
+                                 }).toJSON();
+                return {
+                    modeActiveName: modeActive.name,
+                    modeActiveState: modeActive.state,
+                };
+            },
+            childViewContainer: ".options"
+        });
+
+        var MaintainerLayout = Marionette.LayoutView.extend({
+            tagName: "div",
+            className: "maintainer",
+            template: _.template(TemplateMaintainer),
+            regions: {
+                headerLeft: ".header .left",
+                headerRight: ".header .right",
+                container: ".container"
+            },
+
+            events: {
+                "mouseenter .modes" : "modeButton",
+                "mouseleave .modes" : "hideOptions",
+                "click .modes .options li span": "changeMode"
+            },
+
+            modeButton: function(event){
+                this.$el.find(".options").toggleClass("hide");
+            },
+
+            hideOptions: function(event){
+                this.$el.find(".options").addClass("hide");
+            },
+
+            changeMode: function(event){
+                // change modes active options
+                var ModeName = $(event.target).parent().attr("id");
+                var ModeState = $(event.target).parent().attr("class");
+
+                Maintainer.Channel.command("set:layout", {
+                    modeName: ModeName
+                });
+
+            },
+
+            onShow: function()
+            {
+                // set Modes
+                Maintainer.ModeButtons = new ModesView({collection: Maintainer.modes});
+                Maintainer.Layout.getRegion("modes").show(Maintainer.ModeButtons);
+
+
+                // start regions
+                var Regions = App.module("Maintainer.Regions");
+                var regionsChannelName = Maintainer.Channel.channelName + "_regions";
+                Regions.start({
+                    channelName: regionsChannelName,
+                    modes: Maintainer.modes
+                });
+
+                var regionsChannel = Radio.channel(regionsChannelName);
+                var regionsView = regionsChannel.request("get:regions:root");
+
+                Maintainer.Layout.getRegion("container").show(regionsView);
+
+                //
+                Maintainer.Channel.listenTo(regionsChannel, "change:mode", function(args){
+                    Maintainer.ModeButtons.render();
+
+                });
+            }
+
+
+        });
+
+        this.on("start", function(options){
+            var dataMaintainer = options.dataMaintainer;
+            this.Channel = Radio.channel(options.channelName);
+
+            this.model = new MaintainerModel(dataMaintainer);
+            this.Layout = new MaintainerLayout({model: this.model});
+
+            var modesRegion = Marionette.Region.extend();
+            var modeSelector = this.Layout.$el.find(".modes");
+            this.Layout.addRegion("modes", modeSelector);
+            this.modes = new MaintainerModes(this.model.get("modes"));
+
+            //publish module API through Radio
+            this.Channel.reply("get:maintainer:root", function(){
+                return Maintainer.Layout;
+            });
+
+            // update mode
+            this.Channel.comply("set:layout", function(args){
+                var NewActiveMode = Maintainer.modes.findWhere({ "name": args.modeName });
+                NewActiveMode.set("active", true);
+            });
+
+
+        });
+
+
     });
 
-    var currentMaintainerModel = new MaintainerModel();
 
-    Maintainer.MaintainerLayout = new MaintainerLayout({model: currentMaintainerModel});
-    Maintainer.MaintainerLayout.render();
+    // Regions Submodule!
+    App.module("Maintainer.Regions", function(Regions, App){
+        this.startWithParent = false;
 
-    // Modulo regions
-    Maintainer.module("Regions", function(Regions, Maintainer, Backbone, Marionette, $, _, currentMaintainerModel){
-        // settings
-        var layout = currentMaintainerModel.get("layout");
-        // var behaviour = currentMaintainerModel.get("behaviour");
-        if(layout == "fullpage"){
-            template = FullPageTemplate;
-        }else if(layout == "columnHeaderMainflip"){
-            template = ColumnHeaderMainflip;
-            console.log(layout);
-        }
+        var RegionsLayout = Marionette.LayoutView.extend({
+            initialize: function(options){
+                this.modes = options.modes;
+                this.listenTo(this.modes, "change:active", this.changeActiveMode);
+            },
+            changeActiveMode: function(args){
+                this.modes.each(function(mode){
+                    if( mode.get("name") !== args.get("name") ){
+                        mode.set({ "active": false }, { silent: true });
+                    }
+                });
+                this.render();
+                Regions.Channel.trigger("change:mode", {
+                    modeName: args.get("name")
+                });
+            },
+            getTemplate: function(){
+                var modes = this.modes;
+                var defaultMode = modes.findWhere({
+                    "active": true
+                });
+                var layout;
+                if(defaultMode !== undefined){
+                    layout = defaultMode.get("layout");
+                }
 
-
-
-        Regions.RegionsLayoutView = Marionette.LayoutView.extend({
-            el: Maintainer.MaintainerLayout.regions.container,
-            template: _.template(template),
+                var template;
+                switch(layout){
+                    case "fullpage":
+                        template = _.template(FullPageTemplate);
+                        break;
+                    case "columnHeaderMainflip":
+                        template = _.template(ColumnHeaderMainflip);
+                        break;
+                }
+                return template;
+            },
             regions: {
                 main: ".region .main",
                 columnLeft: ".region .columnLeft",
                 header: ".region .header",
                 mainflip: ".region .mainflip"
-            },
-            onRender: function() {
-                console.log('Regions: onRender');
-            },
-            initialize: function() {
-                console.log('Regions: initialize');
-                // console.log('currentMaintainerModel: ', template);
             }
         });
 
-    }, currentMaintainerModel);
+        this.on("start", function(options){
+            this.Channel = Radio.channel(options.channelName);
+            this.Layout = new RegionsLayout({modes: options.modes});
 
-    // After render Maintainer
-    Maintainer.listenTo(Maintainer, "start", function(){
-        console.log("maintainer start");
-
-        var modelRegions = Maintainer.module("Regions");
-        var deployRegions = new modelRegions.RegionsLayoutView();
-        deployRegions.render();
+            //publish module API through Radio
+            this.Channel.reply("get:regions:root", function(){
+                return Regions.Layout;
+            });
+        });
     });
 
-    // After render Regions
-    Maintainer.listenTo(Maintainer.module("Regions"), "start", function(){
-        console.log("Regions start");
+    // Action!
+    App.on("start", function(options){
+        App.Channel = Radio.channel(options.channelName);
+
+        var Maintainer = App.module("Maintainer");
+        var maintainerChannelName = options.channelName + "_maintainer";
+
+        Maintainer.start({
+            dataMaintainer: options.dataMaintainer,
+            channelName: maintainerChannelName
+        });
+
+        var maintainerChannel = Radio.channel(maintainerChannelName);
+        var maintainerView = maintainerChannel.request("get:maintainer:root");
+
+        Target.main.show(maintainerView);
+
+        App.Channel.on("change:layout", function(args){
+            maintainerChannel.command("set:layout", args);
+        });
     });
 
-    return Maintainer;
+    return App;
 });

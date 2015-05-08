@@ -21,5 +21,31 @@ require.config({
 define([
     "maintainer"
 ], function (Maintainer) {
-    Maintainer.start();
+    Maintainer.start({
+        channelName: "m1",
+        dataMaintainer: {
+            title: "MANTENEDOR DE FRANJAS",
+            layout: "columnHeaderMainflip",
+            modes: [
+                {
+                    name:"edit1",
+                    layout: "columnHeaderMainflip",
+                    state: "edit",
+                    active: false
+                },
+                {
+                    name: "exportar1",
+                    layout: "fullpage",
+                    state: "export",
+                    active: false
+                },
+                {
+                    name: "import1",
+                    layout: "fullpage",
+                    state: "import",
+                    active: true
+                }
+            ]
+        }
+    });
 });
