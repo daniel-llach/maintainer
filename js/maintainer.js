@@ -12,7 +12,7 @@ define([
 
     // Example div target
     var ExampleLayout = Marionette.LayoutView.extend({
-        el: "body",
+        el: "#mainRegion",
         template: _.template("<div id=\"somediv\" style=\"width:100%;\"></div>"),
         className: "component"
     });

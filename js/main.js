@@ -25,7 +25,6 @@ define([
         channelName: "m1",
         dataMaintainer: {
             title: "MANTENEDOR DE FRANJAS",
-            layout: "columnHeaderMainflip",
             modes: [
                 {
                     name:"edit1",
