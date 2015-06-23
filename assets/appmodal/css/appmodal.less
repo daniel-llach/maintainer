@@ -19,6 +19,15 @@
 
 }
 
+.centervertical
+{
+  position: absolute;
+  top: 50%;
+
+  .translate(0, -50%);
+
+}
+
 .border-radius(@radius: 10px)
 {
   -webkit-border-radius: @radius;
@@ -38,103 +47,24 @@
 
 //////// STYLE ///////
 
-// width region
-
-.hOne.region
+.appmodal
 {
-    width: 100%;
+  display: block;
+  background: white;
+  position: absolute;
+  z-index: 99;
+  border: 1px solid #2b9ec1;
+
+  > .triangle
+  {
+    position: absolute;
+    top: -17px;
+    z-index: 100;
+    width: 30px;
+    height: 18px;
+    background-image: url(../img/whitearrow.svg);
+    background-size: 34px;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
 }
-
-.hHalf.region
-{
-    width: 50%;
-}
-// third
-.hThird.region
-{
-    width: 30%;
-}
-
-.hTwo-third.region
-{
-    width: 70%;
-}
-
-// fourth
-
-.hFourth.region
-{
-    width: 25%;
-}
-
-.hThird-fourth.region
-{
-    width: 75%;
-}
-
-// height region
-.vOne.region
-{
-  height: 645px;
-}
-
-.vFourth
-{
-  height: 198px;
-}
-
-.vThird-fourth
-{
-  height: 447px;
-}
-
-
-
-.region
-{
-  min-height: 100px;
-  float: left;
-  display: inline-block;
-  position: relative;
-  overflow: hidden;
-  padding: 20px;
-  border: 1px solid rgba(241, 248, 250, 0.52);
-
-  .box-sizing;
-  // -webkit-transition: all 1s ease-in-out;
-  // -moz-transition: all 1s ease-in-out;
-  // -o-transition: all 1s ease-in-out;
-  // transition: all 1s ease-in-out;
-
-
-    .noDeploy
-    {
-      font-size: 12px;
-      color: #666;
-      .center;
-
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
