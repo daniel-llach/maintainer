@@ -84,21 +84,56 @@
       cursor: pointer;
       margin: 0 2px;
       background-image: url(../img/messages.svg);
-      width: 15px;
-      height: 21px;
+      width: 18px;
+      height: 25px;
       display: block;
-      margin-top: 0px;
+      margin-top: 0;
 
       > span {
         color: #fff;
-        font-size: 9px;
+        font-size: 10px;
         position: relative;
-        top: -6px;
-        left: 5px;
+        top: -4px;
+        left: 6px;
         text-align: center;
         pointer-events: none;
+        font-weight: 300;
       }
 
+    }
+
+    > #loginbar
+    {
+      display: inline-block;
+      margin-top: -6px;
+      cursor: pointer;
+      margin-left: 3px;
+
+      > .thumbnail
+      {
+        pointer-events: none;
+        width: 34px;
+        height: 34px;
+        display: block;
+        border-radius: 50%;
+        border: 2px solid #2b9ec1;
+        position: relative;
+        margin-left: 9px;
+        float: left;
+        background-size: 100%;
+        background-position: center center;
+        background-repeat: no-repeat;
+      }
+
+      > p
+      {
+        pointer-events: none;
+        text-transform: uppercase;
+        font-size: 12px;
+        float: left;
+        margin-left: 9px;
+        margin-top: 11px;
+      }
     }
 
   }

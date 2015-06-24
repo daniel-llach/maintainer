@@ -451,12 +451,36 @@ define([
                             from: "user12"
                         },
                         {
-                            id: "r654r",
+                            id: "re5re",
                             content: "mensaje2",
                             type: "warning",
-                            from: "sistem"
+                            from: "system"
+                        },
+                        {
+                            id: "o988w",
+                            content: "mensaje2",
+                            type: "succes",
+                            from: "system"
                         }
                     ]
+                }
+            },
+            {
+                nombre: "loginbar",
+                active_user: {
+                    nombre: "Felipe Meneses",
+                    thumbnail: "4908651.png"
+                },
+                template: "escenarios",
+                modal: {
+                    asset: "userstatus",
+                    template: "userstatus",
+                    info: {
+                        id: "8y87a6y8a7",
+                        nombre: "Felipe Meneses",
+                        thumbnail: "4908651.png",
+                        profile: "admin"
+                    }
                 }
             }
         ];

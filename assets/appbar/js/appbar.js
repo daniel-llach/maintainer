@@ -6,7 +6,8 @@ define([
     "text!assets/appbar/templates/escenarios.html",
     "text!assets/appbar/templates/menuapps.html",
     "text!assets/appbar/templates/messages.html",
-], function (Marionette, Radio, Shim, AppModal, EscenariosTemplate, MenuAppsTemplate, MessagesTemplate) {
+    "text!assets/appbar/templates/loginbar.html",
+], function (Marionette, Radio, Shim, AppModal, EscenariosTemplate, MenuAppsTemplate, MessagesTemplate, LoginBarTemplate) {
     var AppBarConstructor = function(channelName){
 
         var AppBar = new Marionette.Application();
@@ -25,6 +26,9 @@ define([
                         break;
                     case "messages":
                         return _.template(MessagesTemplate);
+                        break;
+                    case "loginbar":
+                        return _.template(LoginBarTemplate);
                         break;
                 }
             },
